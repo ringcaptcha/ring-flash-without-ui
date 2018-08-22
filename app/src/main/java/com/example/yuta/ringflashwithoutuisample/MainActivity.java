@@ -2,6 +2,7 @@ package com.example.yuta.ringflashwithoutuisample;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
@@ -25,8 +26,9 @@ import com.thrivecom.ringcaptcha.ringflashsdk.model.RingFlashResponse;
 public class MainActivity extends AppCompatActivity {
     private final int PERMISSIONS = 1;
 
-    private String APP_KEY = "YOUR_APP_KEY";
-    private String SECRET_KEY = "YOUR_SECRET_KEY";
+    public static final String RINGCAPTCHA_APP_KEY = "YOUR_APP_KEY";
+    public static final String RINGCAPTCHA_SECRET_KEY = "YOUR_SECRET_KEY";
+    public static final String RINGCAPTCHA_PHONE_NUMBER = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +58,10 @@ public class MainActivity extends AppCompatActivity {
         TextView tvn = (TextView)findViewById(R.id.numberEditText);
         String number_text = tvn.getText().toString();
         //TODO Log Error when APIs return an error.
-        verifyWithoutUi(number_text);
+        Intent intent = new Intent(this, WaitActivity.class);
+        intent.putExtra(RINGCAPTCHA_PHONE_NUMBER, number_text);
+
+        startActivity(intent);
     }
 
     public static boolean hasPermissions(Context context, String... permissions) {
@@ -70,95 +75,6 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
     
-    private void verifyWithoutUi(final String number) {
-        final RingFlashCredentials credentials = new RingFlashCredentials();
-        credentials.setSecretKey(SECRET_KEY);
-        credentials.setAppKey(APP_KEY);
-        credentials.setPhoneNumber(number);
-
-        RingFlashAPIHandler ringFlashAPIHandler = new RingFlashAPIHandler() {
-            @Override
-            public void onSuccess(RingFlashResponse response) {
-                boolean callRequested = response.checkStatus();
-                if (callRequested) {
-                    RingFlashInterceptionHandler interceptionHandler = new RingFlashInterceptionHandler() {
-                        @Override
-                        public void onCallEnded(String callerNumber) {
-                            RingFlashAPIHandler ringFlashAPIHandler1 = new RingFlashAPIHandler() {
-                                @Override
-                                public void onSuccess(RingFlashResponse response) {
-                                    boolean callRequested = response.checkStatus();
-                                    if (callRequested) {
-
-                                    } else {
-
-                                    }
-                                }
-
-                                @Override
-                                public void onError(Exception exception) {
-
-                                }
-                            };
-
-                            RingFlashAPIController ringFlashAPIController = new RingFlashAPIController(getApplicationContext());
-                            ringFlashAPIController.requestVerification(credentials, callerNumber, ringFlashAPIHandler1);
-                        }
-                    };
-                    RingFlashSDK ringFlashSDK = RingFlashSDK.builder()
-                            .setContext(getApplicationContext())
-                            .setSecretKey(SECRET_KEY)
-                            .setAppKey(APP_KEY)
-                            .setHandler(getEmptyHandler())
-                            .setPhoneNumber(number)
-                            .build();
-                    ringFlashSDK.startCellularBroadcastIntercepting(interceptionHandler);
-                } else {
-
-                }
-            }
-
-            @Override
-            public void onError(Exception exception) {
-
-            }
-        };
-
-        RingFlashAPIController ringFlashAPIController = new RingFlashAPIController(getApplicationContext());
-        ringFlashAPIController.requestVoiceCall(credentials, ringFlashAPIHandler);
-    }
-
-    private static RingFlashVerificationHandler getEmptyHandler() {
-
-        return new RingFlashVerificationHandler() {
-            @Override
-            public void onVerified() {
-            }
-
-            @Override
-            public void onVerificationFailed(RingFlashResponse response) {
-            }
-
-            @Override
-            public void onError(Exception e) {
-            }
-
-            @Override
-            public void onFlashCallRequested(RingFlashResponse response) {
-
-            }
-
-            @Override
-            public void onFlashCallRequestedFailed(RingFlashResponse response) {
-
-            }
-
-            @Override
-            public void onVerificationInitiated() {
-            }
-
-        };
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,

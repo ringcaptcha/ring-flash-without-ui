@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">RingFlashWithoutUiSample</string>
+    <string name="message_text">Please confirm your phone number</string>
+    <string name="button_text">Verify</string>
+</resources>

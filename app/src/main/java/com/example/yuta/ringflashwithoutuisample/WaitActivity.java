@@ -1,10 +1,12 @@
 package com.example.yuta.ringflashwithoutuisample;
 
 import android.content.Intent;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.thrivecom.ringcaptcha.ringflashsdk.RingFlashSDK;
@@ -16,6 +18,7 @@ import com.thrivecom.ringcaptcha.ringflashsdk.model.RingFlashCredentials;
 import com.thrivecom.ringcaptcha.ringflashsdk.model.RingFlashResponse;
 
 public class WaitActivity extends AppCompatActivity {
+    private RingFlashSDK _flashCallSDK = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +31,30 @@ public class WaitActivity extends AppCompatActivity {
 
         // Verify
         verifyWithoutUi(MainActivity.RINGCAPTCHA_APP_KEY, MainActivity.RINGCAPTCHA_SECRET_KEY, number_text);
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Clear intercepting
+        if (_flashCallSDK != null) {
+            _flashCallSDK.stopCellularBroadcastIntercepting();
+        }
+        super.onBackPressed();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                // Clear intercepting
+                if (_flashCallSDK != null) {
+                    _flashCallSDK.stopCellularBroadcastIntercepting();
+                }
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void verifyWithoutUi(final String app_key, final String secret_key, final String number) {
@@ -54,6 +81,7 @@ public class WaitActivity extends AppCompatActivity {
                                         Toast toast = Toast.makeText(getApplicationContext(), "VERIFIED!", Toast.LENGTH_LONG);
                                         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
                                         toast.show();
+                                        _flashCallSDK.stopCellularBroadcastIntercepting();
                                         finish();
                                     } else {
                                         String error = response.getMessage() == null ? "ERROR_DEFAULT_MESSAGE" : response.getMessage();
@@ -61,12 +89,14 @@ public class WaitActivity extends AppCompatActivity {
                                         Toast toast = Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG);
                                         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
                                         toast.show();
+                                        _flashCallSDK.stopCellularBroadcastIntercepting();
                                         finish();
                                     }
                                 }
 
                                 @Override
                                 public void onError(Exception exception) {
+                                    _flashCallSDK.stopCellularBroadcastIntercepting();
                                     //TODO
                                 }
                             };
@@ -75,14 +105,14 @@ public class WaitActivity extends AppCompatActivity {
                             ringFlashAPIController.requestVerification(credentials, callerNumber, ringFlashAPIHandler1);
                         }
                     };
-                    RingFlashSDK ringFlashSDK = RingFlashSDK.builder()
+                    _flashCallSDK = RingFlashSDK.builder()
                             .setContext(getApplicationContext())
                             .setSecretKey(secret_key)
                             .setAppKey(app_key)
                             .setHandler(getEmptyHandler())
                             .setPhoneNumber(number)
                             .build();
-                    ringFlashSDK.startCellularBroadcastIntercepting(interceptionHandler);
+                    _flashCallSDK.startCellularBroadcastIntercepting(interceptionHandler);
                 } else {
                     String error = response.getMessage() == null ? "ERROR_DEFAULT_MESSAGE" : response.getMessage();
                     Log.i(MainActivity.TAG, error);

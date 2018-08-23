@@ -24,6 +24,7 @@ import com.thrivecom.ringcaptcha.ringflashsdk.model.RingFlashCredentials;
 import com.thrivecom.ringcaptcha.ringflashsdk.model.RingFlashResponse;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String TAG = "MyApp";
     private final int PERMISSIONS = 1;
 
     public static final String RINGCAPTCHA_APP_KEY = "YOUR_APP_KEY";

@@ -1,8 +1,11 @@
 package com.example.yuta.ringflashwithoutuisample;
 
 import android.content.Intent;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Gravity;
 import android.widget.Toast;
 
 import com.thrivecom.ringcaptcha.ringflashsdk.RingFlashSDK;
@@ -37,27 +40,35 @@ public class WaitActivity extends AppCompatActivity {
         RingFlashAPIHandler ringFlashAPIHandler = new RingFlashAPIHandler() {
             @Override
             public void onSuccess(RingFlashResponse response) {
+                Log.i(MainActivity.TAG, response.toString());
                 boolean callRequested = response.checkStatus();
                 if (callRequested) {
-
                     RingFlashInterceptionHandler interceptionHandler = new RingFlashInterceptionHandler() {
                         @Override
                         public void onCallEnded(String callerNumber) {
                             RingFlashAPIHandler ringFlashAPIHandler1 = new RingFlashAPIHandler() {
                                 @Override
                                 public void onSuccess(RingFlashResponse response) {
+                                    Log.i(MainActivity.TAG, response.toString());
                                     boolean is_verified = response.checkStatus();
                                     if (is_verified) {
-                                        Toast.makeText(getApplicationContext(), "VERIFIED!", Toast.LENGTH_LONG).show();
+                                        Toast toast = Toast.makeText(getApplicationContext(), "VERIFIED!", Toast.LENGTH_LONG);
+                                        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+                                        toast.show();
                                         finish();
                                     } else {
-
+                                        String error = response.getMessage() == null ? "ERROR_DEFAULT_MESSAGE" : response.getMessage();
+                                        Log.i(MainActivity.TAG, error);
+                                        Toast toast = Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG);
+                                        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+                                        toast.show();
+                                        finish();
                                     }
                                 }
 
                                 @Override
                                 public void onError(Exception exception) {
-
+                                    //TODO
                                 }
                             };
 
@@ -74,13 +85,18 @@ public class WaitActivity extends AppCompatActivity {
                             .build();
                     ringFlashSDK.startCellularBroadcastIntercepting(interceptionHandler);
                 } else {
-
+                    String error = response.getMessage() == null ? "ERROR_DEFAULT_MESSAGE" : response.getMessage();
+                    Log.i(MainActivity.TAG, error);
+                    Toast toast = Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+                    toast.show();
+                    finish();
                 }
             }
 
             @Override
             public void onError(Exception exception) {
-
+                //TODO
             }
         };
 

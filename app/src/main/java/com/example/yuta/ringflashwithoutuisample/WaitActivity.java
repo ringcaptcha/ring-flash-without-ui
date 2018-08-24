@@ -93,6 +93,7 @@ public class WaitActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onError(Exception exception) {
+                                    Log.i(MainActivity.TAG, exception.getMessage());
                                     _flashCallSDK.stopCellularBroadcastIntercepting();
                                     //TODO
                                 }

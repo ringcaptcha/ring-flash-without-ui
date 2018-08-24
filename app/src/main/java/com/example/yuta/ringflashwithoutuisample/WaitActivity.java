@@ -76,22 +76,19 @@ public class WaitActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(RingFlashResponse response) {
                                     Log.i(MainActivity.TAG, response.toString());
+                                    String message = "";
                                     boolean is_verified = response.checkStatus();
                                     if (is_verified) {
-                                        Toast toast = Toast.makeText(getApplicationContext(), "VERIFIED!", Toast.LENGTH_LONG);
-                                        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-                                        toast.show();
-                                        _flashCallSDK.stopCellularBroadcastIntercepting();
-                                        finish();
+                                        message = "VERIFIED!";
                                     } else {
-                                        String error = response.getMessage() == null ? "ERROR_DEFAULT_MESSAGE" : response.getMessage();
-                                        Log.i(MainActivity.TAG, error);
-                                        Toast toast = Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG);
-                                        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-                                        toast.show();
-                                        _flashCallSDK.stopCellularBroadcastIntercepting();
-                                        finish();
+                                        message = response.getMessage() == null ? "ERROR_DEFAULT_MESSAGE" : response.getMessage();
+                                        Log.i(MainActivity.TAG, message);
                                     }
+                                    Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
+                                    toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+                                    toast.show();
+                                    _flashCallSDK.stopCellularBroadcastIntercepting();
+                                    finish();
                                 }
 
                                 @Override

@@ -75,7 +75,10 @@ public class WaitActivity extends AppCompatActivity {
                             RingFlashAPIHandler ringFlashAPIHandler1 = new RingFlashAPIHandler() {
                                 @Override
                                 public void onSuccess(RingFlashResponse response) {
-                                    Log.i(MainActivity.TAG, response.toString());
+                                    // Get verified phone number and session token from the response object:
+                                    Log.i(MainActivity.TAG, response.getPhone());
+                                    Log.i(MainActivity.TAG, response.getToken());
+
                                     String message = "";
                                     boolean is_verified = response.checkStatus();
                                     if (is_verified) {

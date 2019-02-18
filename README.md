@@ -171,5 +171,59 @@ ringFlashAPIController.requestVerification(credentials, "Replace with caller num
 ```
 **Warning:** The same Credentials object must be passed to both **requestVoiceCall** and **requestVerification** methods. In another case, verification fails even if Credentials instances have the same APP_KEY, SECRET_KEY, and phone number.
 
+#### Parse response from RingCaptcha
+To parse response from RingCaptcha, use ```RingFlashResponse``` class. Following getters exists:
+```java
+public String getId() {
+        return id;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getService() {
+        return service;
+    }
+
+    public int getExpires_in() {
+        return expires_in;
+    }
+
+    public int getRetry_in() {
+        return retry_in;
+    }
+```
+
+You can access them easily in `onSuccess` method:
+
+```java
+RingFlashAPIHandler ringFlashAPIHandler = new RingFlashAPIHandler() {
+    @Override
+    public void onSuccess(RingFlashResponse response) {
+        boolean is_verified = response.checkStatus();
+        if (is_verified) {
+            // Get verified phone number and session token from the response object:
+            Log.i(MainActivity.TAG, response.getPhone());
+            Log.i(MainActivity.TAG, response.getToken());
+        } else {
+            //Actions needed to perform after request was failed
+        }
+    }
+}
+```
+
 ### Retrieving an additional info from callbacks
 Almost all callbacks provided by ```RingFlashAPIHandler``` and ```RingFlashVerificationHandler``` has a ```RingFlashResponse``` object as a parameter. This object contains all data from RC API response, i.e., seconds needed to wait before another attempt, transaction id, token etc.
